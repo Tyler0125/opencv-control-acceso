@@ -2,6 +2,12 @@
 
 Aplicación web desarrollada con **Flask** y **OpenCV** para controlar el acceso de personas mediante reconocimiento facial. Permite registrar rostros, escanearlos en tiempo real desde el navegador, y registrar automáticamente entradas y salidas con exportación a Excel.
 
+## Demo en vivo
+
+**[Ver demo → opencv-flask-xn43a3ze3a-uc.a.run.app/escanear-rostro](https://opencv-flask-xn43a3ze3a-uc.a.run.app/escanear-rostro)**
+
+> Desplegado en Google Cloud Run — proyecto `tylerrv25@gmail.com`
+
 ## Funcionalidades
 
 - **Registro de rostros** — Captura y almacena el rostro de una persona usando la cámara del navegador
