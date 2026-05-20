@@ -1,0 +1,30 @@
+# Variables de entorno
+.env
+
+# Datos personales y biométricos (nunca subir)
+flask_app/data/faces/
+flask_app/data/*.xlsx
+flask_app/data/*.txt
+flask_app/data/*.csv
+
+# Caché de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Pipenv
+Pipfile.lock
+
+# IDEs
+.vscode/
+.idea/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

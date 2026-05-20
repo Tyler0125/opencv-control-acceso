@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escaneo de Rostro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+        main {
+            height: 100%;
+        }
+        .page-card {
+            height: calc(100vh - 2rem);
+        }
+        .page-card .card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            overflow: hidden;
+        }
+        .camara-preview {
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+            object-fit: cover;
+            max-height: calc(100vh - 24rem);
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <main class="container py-3">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="card border-0 shadow-lg rounded-4 page-card">
+                    <div class="card-body p-3 p-md-4">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                            <div>
+                                <h1 class="h3 mb-1">Escaneo de Rostro</h1>
+                                <p class="text-muted mb-0">Reconoce personas y registra automáticamente su ingreso o salida.</p>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="{{ url_for('root.registro_rostro') }}" class="btn btn-outline-primary">Registrar persona</a>
+                                <a href="{{ url_for('root.registros_rostro') }}" class="btn btn-outline-dark">Ver historial</a>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-light border mb-0" role="alert">
+                            Presiona <strong>Escanear rostro</strong> para capturar la imagen, reconocer a la persona y guardar el movimiento en el historial.
+                        </div>
+
+                        <video id="video" class="camara-preview rounded-3 border" autoplay playsinline></video>
+                        <canvas id="canvas" class="d-none"></canvas>
+
+                        <div class="d-grid">
+                            <button id="btnEscanear" class="btn btn-primary btn-lg" type="button">Escanear rostro</button>
+                        </div>
+
+                        <div id="resultado" class="alert alert-secondary mb-0" role="alert">
+                            Esperando escaneo...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const btnEscanear = document.getElementById('btnEscanear');
+        const resultado = document.getElementById('resultado');
+
+        async function iniciarCamara() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                video.srcObject = stream;
+            } catch (error) {
+                resultado.className = 'alert alert-danger mt-3 mb-0';
+                resultado.textContent = 'No se pudo abrir la cámara. Revisa permisos del navegador.';
+            }
+        }
+
+        function capturarFrame() {
+            const width = video.videoWidth;
+            const height = video.videoHeight;
+            if (!width || !height) {
+                return null;
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, width, height);
+            return canvas.toDataURL('image/jpeg', 0.9);
+        }
+
+        btnEscanear.addEventListener('click', async () => {
+            const imageData = capturarFrame();
+            if (!imageData) {
+                resultado.className = 'alert alert-warning mt-3 mb-0';
+                resultado.textContent = 'La cámara aún no está lista.';
+                return;
+            }
+
+            btnEscanear.disabled = true;
+            resultado.className = 'alert alert-info mt-3 mb-0';
+            resultado.textContent = 'Escaneando...';
+
+            try {
+                const response = await fetch('{{ url_for("root.api_escanear_rostro") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image_data: imageData })
+                });
+                const data = await response.json();
+
+                if (data.ok && data.event) {
+                    resultado.className = 'alert alert-success mt-3 mb-0';
+                    resultado.textContent = `Persona registrada: ${data.event.nombre} | ${data.event.tipo} | ${data.event.fecha} ${data.event.hora}`;
+                } else {
+                    resultado.className = 'alert alert-danger mt-3 mb-0';
+                    resultado.textContent = data.message || 'No fue posible reconocer el rostro.';
+                }
+            } catch (error) {
+                resultado.className = 'alert alert-danger mt-3 mb-0';
+                resultado.textContent = 'Error de conexión con el servidor.';
+            } finally {
+                btnEscanear.disabled = false;
+            }
+        });
+
+        iniciarCamara();
+    </script>
+</body>
+</html>
