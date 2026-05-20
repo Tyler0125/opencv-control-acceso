@@ -6,6 +6,8 @@ Aplicación web desarrollada con **Flask** y **OpenCV** para controlar el acceso
 
 **[Ver demo → opencv-flask-xn43a3ze3a-uc.a.run.app/escanear-rostro](https://opencv-flask-xn43a3ze3a-uc.a.run.app/escanear-rostro)**
 
+![QR Code](opencv-control-acceso_QR.png)
+
 > Desplegado en Google Cloud Run — proyecto `tylerrv25@gmail.com`
 
 ## Funcionalidades
