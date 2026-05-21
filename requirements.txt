@@ -1,0 +1,9 @@
+flask
+python-dotenv
+pymysql
+flask-bcrypt
+opencv-python-headless
+openpyxl
+numpy
+pandas
+gunicorn

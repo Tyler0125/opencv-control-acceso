@@ -1,0 +1,13 @@
+.env
+.git
+.gitignore
+__pycache__/
+*.pyc
+*.pyo
+flask_app/data/faces/
+flask_app/data/*.xlsx
+flask_app/data/*.txt
+Pipfile
+Pipfile.lock
+README.md
+*.png
